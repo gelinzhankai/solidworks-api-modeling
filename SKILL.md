@@ -13,8 +13,9 @@ Use this skill as a self-contained execution discipline for engineering-drawing-
 2. Convert the drawing into a feature plan before coding: base body, datum/axis, secondary cuts, ribs, holes, fillets/chamfers, annotations.
 3. Build one feature group at a time. Do not regenerate from a new blank part when the user is inspecting a paused intermediate state.
 4. For complex sketches, pause after drawing the sketch and capture a normal-to snapshot before creating the feature.
-5. After each committed feature group, rebuild, capture an isometric snapshot, and check geometry against the drawing.
-6. Save the completed model, but leave the final SolidWorks document open.
+5. When the drawing shows arcs or rounded ends, use real SolidWorks arc entities wherever possible. Do not approximate arcs with short line segments unless explicitly diagnosing an API failure and report that fallback.
+6. After each committed feature group, rebuild, capture an isometric snapshot, and check geometry against the drawing.
+7. Save the completed model, but leave the final SolidWorks document open.
 
 ## Bundled Helpers
 

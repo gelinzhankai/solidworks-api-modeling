@@ -4,6 +4,8 @@
 
 这个 skill 的重点不是“一次性生成万能 CAD 模型”，而是把工程图拆解成可验证的 SolidWorks 建模步骤：先确认草图平面、方向和轮廓，再拉伸、切除、旋转或倒角，最后保存模型并保留在 SolidWorks 界面中供检查。
 
+English version: [README_EN.md](README_EN.md)
+
 ## 更适合的零件类型
 
 这个 skill 在尺寸清楚、结构规则、特征逻辑明确的零件上表现更好，尤其适合：
@@ -67,6 +69,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\check_sw_env.ps1
 ```text
 C:\Users\<你的用户名>\.codex\skills\solidworks-api-modeling
 ```
+
+如果希望让 Agent 直接安装，可以把这个仓库链接发给 Agent，并要求它安装为 Codex skill：
+
+[https://github.com/gelinzhankai/solidworks-api-modeling](https://github.com/gelinzhankai/solidworks-api-modeling)
 
 本仓库已经内置常规零件建模所需的 SolidWorks helper：
 
