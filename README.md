@@ -1,118 +1,120 @@
 # SolidWorks API Modeling Skill
 
-This Codex skill helps an AI agent drive SolidWorks through the Windows COM API to create, modify, and verify parametric parts from dimensions, engineering drawings, sketches, or screenshots.
+这是一个面向 Codex 的 SolidWorks 自动建模 skill。它让 AI Agent 可以通过 Windows 上的 SolidWorks COM API，使用 Python 连接本机 SolidWorks，并根据尺寸、工程图、草图或截图逐步创建和修改三维零件。
 
-It is designed for practical CAD automation work where SolidWorks is installed locally and the model can be built step by step with visual verification.
+这个 skill 的重点不是“一次性生成万能 CAD 模型”，而是把工程图拆解成可验证的 SolidWorks 建模步骤：先确认草图平面、方向和轮廓，再拉伸、切除、旋转或倒角，最后保存模型并保留在 SolidWorks 界面中供检查。
 
-## Best Fit
+## 更适合的零件类型
 
-This skill performs best on parts with clear dimensions, regular geometry, and feature-based construction logic, especially:
+这个 skill 在尺寸清楚、结构规则、特征逻辑明确的零件上表现更好，尤其适合：
 
-- Stepped shafts, simple transmission shafts, keyway shafts, grooved shafts, and other axisymmetric parts.
-- Simple bearing housings, support brackets, mounting bases, plates, covers, flanges, and hole-pattern parts.
-- Parts built from common SolidWorks features such as sketches, extrudes, cuts, revolves, holes, fillets, chamfers, ribs, shells, and patterns.
-- Engineering drawings where the main views, section views, diameters, lengths, hole positions, and groove/keyway details are readable.
+- 简单轴类零件：阶梯轴、传动轴、键槽轴、退刀槽轴、带槽轴、简单花键轴等。
+- 简单轴承座/支架类零件：轴承座、支撑座、安装座、底板、支架、肋板结构、法兰、端盖等。
+- 板类和孔阵列零件：矩形板、安装板、沉头孔板、法兰孔阵列件等。
+- 可以由常规 SolidWorks 特征构成的零件：草图、拉伸、切除、旋转、孔、圆角、倒角、筋、抽壳、阵列等。
+- 主视图、剖视图、尺寸标注、孔位、槽位、直径和长度比较清晰的工程图。
 
-For simple shaft parts and simple bearing-seat or bracket-like parts, the workflow is usually reliable because the model can be decomposed into clear feature groups: base body, holes, grooves, slots, ribs, rounds, and chamfers.
+对于简单轴类和简单轴承座类零件，效果通常更稳定，因为这类零件可以清楚拆成几个建模阶段：主体、台阶、孔、槽、键槽、肋板、圆角和倒角。
 
-## What It Does
+## 主要能力
 
-- Connects to a running SolidWorks session through Python and `pywin32`.
-- Creates or edits SolidWorks part files (`.SLDPRT`).
-- Converts millimeter dimensions into SolidWorks API meter units.
-- Builds models using sketches and standard part features.
-- Captures verification snapshots before and after important operations.
-- Encourages step-by-step modeling instead of one-shot generation for complex parts.
-- Keeps the final SolidWorks model open after saving so the user can inspect it.
+- 连接已经打开的 SolidWorks。
+- 新建或修改 SolidWorks 零件文件 `.SLDPRT`。
+- 以毫米作为用户输入单位，并自动转换为 SolidWorks API 使用的米。
+- 使用草图和常规零件特征生成模型。
+- 在复杂草图拉伸或切除之前截图确认。
+- 在关键特征完成后截图检查结果。
+- 支持逐步建模，而不是每次都从空白零件重新开始。
+- 保存模型后不关闭零件，方便用户继续观察、录屏或手动调整。
 
-## Important Limits
+## 重要限制
 
-This skill is not a replacement for a human CAD engineer.
+这个 skill 不能替代专业 CAD 工程师。
 
-It works best when the drawing is clear and the geometry can be described with normal SolidWorks features. It may need extra human confirmation for:
+它更适合几何关系明确、可以用常规特征表达的零件。下面这些情况通常需要更多人工判断和反复确认：
 
-- Complex castings with ambiguous freeform surfaces.
-- Poorly scanned or incomplete drawings.
-- Dense tolerance, GD&T, roughness, and manufacturing annotations.
-- Advanced surfacing, loft-heavy parts, organic shapes, or aesthetic surfaces.
-- Assemblies where mating intent is not clear from the input.
+- 复杂铸件、复杂曲面或自由曲面零件。
+- 扫描质量较差、尺寸缺失或视图不完整的工程图。
+- 大量形位公差、粗糙度、热处理、材料和工艺要求需要完整 PMI 表达的模型。
+- 依赖放样、边界曲面、复杂曲面修剪的零件。
+- 装配关系不明确的装配体。
 
-For complex sketches, the intended workflow is to draw the sketch first, capture a SolidWorks snapshot, let the user confirm the plane/orientation/profile, and only then create the feature.
+对于复杂草图，推荐流程是：先只绘制草图并截图，用户确认草图位置、方向和轮廓正确后，再执行拉伸、切除或旋转。
 
-## Requirements
+## 环境要求
 
-- Windows.
-- SolidWorks installed and registered for COM automation.
-- Python 3.8+.
-- `pywin32`.
+- Windows 系统。
+- 本机已安装 SolidWorks，并且已注册 COM 接口。
+- Python 3.8 或更高版本。
+- Python 依赖 `pywin32`。
 
-Typical dependency setup:
+安装 `pywin32`：
 
 ```powershell
 py -3 -m pip install pywin32
 ```
 
-To check the local environment, run:
+检查本机 SolidWorks 自动化环境：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\check_sw_env.ps1
 ```
 
-## Installation
+## 安装方式
 
-Install this repository as a Codex skill, or copy the repository folder into your Codex skills directory:
+将本仓库安装或复制到 Codex 的 skills 目录，例如：
 
 ```text
-C:\Users\<you>\.codex\skills\solidworks-api-modeling
+C:\Users\<你的用户名>\.codex\skills\solidworks-api-modeling
 ```
 
-The required SolidWorks helper scripts are bundled in this repository:
+本仓库已经内置常规零件建模所需的 SolidWorks helper：
 
-- `scripts/sw_connect.py`
-- `scripts/sw_part.py`
+- `scripts/sw_connect.py`：SolidWorks 连接、新建、打开、保存、单位转换等。
+- `scripts/sw_part.py`：草图、拉伸、切除、旋转、圆角、倒角、筋、阵列、孔等零件建模操作。
 
-No separate installation of `solidworks-automation-skill` is required for normal part modeling.
+因此，正常零件建模不需要额外安装 `solidworks-automation-skill`。
 
-## Recommended Workflow
+## 推荐使用流程
 
-1. Open SolidWorks manually.
-2. Ask Codex to use this skill to model a part from a drawing or dimensions.
-3. Let Codex extract a feature plan from the drawing.
-4. Build one feature group at a time.
-5. For any complex sketch, verify the screenshot before creating the feature.
-6. Rebuild, inspect, and save the model.
-7. Leave the final part open in SolidWorks.
+1. 手动打开 SolidWorks。
+2. 在 Codex 中要求使用这个 skill 根据工程图或尺寸建模。
+3. 先让 Codex 从工程图中整理特征计划。
+4. 按特征组逐步建模。
+5. 遇到复杂草图时，先截图确认，再执行特征。
+6. 每个关键特征完成后重建并检查模型。
+7. 保存最终模型，但保留 SolidWorks 中的零件窗口。
 
-This incremental workflow is important. It helps catch common CAD automation errors such as sketching on the wrong plane, cutting in the wrong direction, using stale windows, or creating an ambiguous sketch profile.
+这种逐步流程很重要。它可以减少自动建模中常见的问题，例如草图平面选错、切除方向反了、读取了旧窗口截图、草图轮廓没有闭合或轮廓区域不明确。
 
-## Example Requests
-
-```text
-Use this skill to create a stepped shaft from this engineering drawing.
-```
+## 示例请求
 
 ```text
-Model a simple bearing housing with a base plate, four mounting holes, a central bore, ribs, and fillets.
+使用这个 skill，根据这张工程图创建一个阶梯轴。
 ```
 
 ```text
-Continue editing the active SolidWorks part. Add a round-ended keyway on the shaft surface and show me the sketch before cutting.
+建模一个简单轴承座：底板、四个安装孔、中心孔、两侧肋板和圆角。
 ```
 
 ```text
-Create a 120 mm x 75 mm x 10 mm rectangular plate with four corner holes, a center pocket, and 1 mm chamfers.
+继续编辑当前 SolidWorks 零件，在轴表面添加一个两端为圆弧的键槽，切除前先给我看草图截图。
 ```
 
-## Modeling Notes
+```text
+创建一个 120mm x 75mm x 10mm 的矩形板，四角通孔，中间矩形凹槽，外边倒角 1mm。
+```
 
-- Use millimeters in user-facing dimensions.
-- Use SolidWorks API meter units internally.
-- Prefer real arcs for round geometry instead of polyline approximations.
-- For shaft grooves, model full-circumference turned grooves instead of local rectangular cuts.
-- For keyways on cylinders, use a tangent sketch plane and cut inward.
-- For ribs and brackets, define the global coordinate system before sketching.
-- Store tolerances, roughness, material, and heat-treatment notes as custom properties unless full PMI annotation is requested.
+## 建模注意事项
 
-## License Notes
+- 用户输入尺寸默认使用毫米。
+- SolidWorks COM API 内部尺寸使用米。
+- 工程图中是圆弧的地方，优先使用真实圆弧，不要用多段直线近似。
+- 轴上的退刀槽、环槽等一整圈结构，应按车削特征处理，不要做成局部小切口。
+- 轴上的键槽应在圆柱表面的切向平面绘制草图，并沿法向切入。
+- 支架、轴承座、底板和肋板类零件，应先定义全局坐标系，再决定草图平面和拉伸方向。
+- 公差、粗糙度、材料、热处理等制造信息，默认适合作为自定义属性保存；如果需要 PMI 或 3D 注释，需要单独说明。
 
-Some bundled helper code is derived from `solidworks-automation-skill` under the MIT License. See `THIRD_PARTY_NOTICES.md`.
+## 许可说明
+
+部分内置 helper 代码来自 `solidworks-automation-skill`，遵循 MIT License。详见 `THIRD_PARTY_NOTICES.md`。
