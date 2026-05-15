@@ -5,7 +5,7 @@ description: Build, modify, and verify SolidWorks parts through the Windows COM 
 
 # SolidWorks API Modeling
 
-Use this skill as the execution discipline for engineering-drawing-to-SolidWorks modeling. Use the installed `solidworks-automation` skill as the API helper/reference layer when reusable functions for sketches, features, assemblies, drawings, or export are useful.
+Use this skill as a self-contained execution discipline for engineering-drawing-to-SolidWorks modeling. The bundled scripts provide the common SolidWorks COM helpers needed for connection, document handling, sketches, and part features.
 
 ## Operating Contract
 
@@ -16,23 +16,17 @@ Use this skill as the execution discipline for engineering-drawing-to-SolidWorks
 5. After each committed feature group, rebuild, capture an isometric snapshot, and check geometry against the drawing.
 6. Save the completed model, but leave the final SolidWorks document open.
 
-## Use the Automation Skill
+## Bundled Helpers
 
-Prefer the installed helper skill at:
+Use the local helper scripts first:
 
-`C:\Users\24262\.codex\skills\solidworks-automation`
-
-Read only the needed file:
-
-- `scripts/sw_connect.py`: connection, new/open/save helpers, `mm()`, `deg()`.
-- `scripts/sw_part.py`: sketches, boss/cut extrudes, revolve, fillet, chamfer, shell, rib, patterns, Hole Wizard.
-- `scripts/sw_assembly.py`: components and mates.
-- `scripts/sw_drawing.py`: drawing views, notes, dimensions, sheets.
-- `scripts/sw_export.py`: STEP/STL/IGES/Parasolid/PDF/DXF export.
-- `references/part-modeling.md`: API parameter reminders for sketches/features.
-- `references/troubleshooting.md`: selection, sketch, and save failures.
+- `scripts/check_sw_env.ps1`: check COM registration, Python, and `pywin32`.
+- `scripts/sw_connect.py`: connect/open/create/save documents, `mm()`, `deg()`, COM member compatibility helpers.
+- `scripts/sw_part.py`: select planes/sketches, draw sketch geometry, boss/cut extrudes, revolve, fillet, chamfer, shell, rib, patterns, Hole Wizard.
 
 Keep project-specific scripts in the workspace when they encode a real modeling sequence. Do not copy large generic helper code into each project script.
+
+The upstream `solidworks-automation-skill` project can still be useful as optional reference material for assemblies, drawings, exports, sheet metal, weldments, or simulation, but this skill must not require it to be installed for normal part modeling.
 
 ## Step Mode
 
@@ -80,4 +74,4 @@ Common conventions:
 
 - Read `references/solidworks-com-patterns.md` for environment checks, COM quirks, cleanup, save, and snapshot snippets.
 - Read `references/shaft-modeling.md` before shafts, keyways, grooves, splines, threads, or revolved features.
-- Read `solidworks-automation/references/part-modeling.md` when feature API arguments or sketch entities are needed.
+- If installed separately, read `solidworks-automation/references/part-modeling.md` only for extra API reminders beyond the bundled helpers.
