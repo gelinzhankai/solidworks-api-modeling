@@ -1,0 +1,4 @@
+interface:
+  display_name: "SolidWorks API Modeling"
+  short_description: "Automate SolidWorks COM modeling with verification snapshots."
+  default_prompt: "Use $solidworks-api-modeling to build or modify a SolidWorks part from dimensions or an engineering drawing."
